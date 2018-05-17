@@ -69,6 +69,20 @@ class Deck extends Component {
     this.setState({ index: this.state.index + 1 });
   }
 
+  //Change rotation angle based on distance from starting position
+  getTiltStyle() {
+    const { position } = this.state;
+    const rotate = position.x.interpolate({
+      inputRange: [-WINDOW_WIDTH, 0, WINDOW_WIDTH],
+      outputRange: ['-80deg', '0deg', '80deg']
+    });
+
+    return {
+      ...position.getLayout(),
+      transform: [{ rotate }]
+    };
+  }
+
 	renderUpperCard(item) {
     return (
       <Card
@@ -96,7 +110,7 @@ class Deck extends Component {
 	          //Topmost card
 	          <Animated.View
 	            key={item.id}
-	            style={[ styles.cardStyle, { zIndex: 99 }]}
+	            style={[this.getTiltStyle(), styles.cardStyle, { zIndex: 99 }]}
 	            {...this.state.panResponder.panHandlers}
 	          >
 	            {this.renderUpperCard(item)}
