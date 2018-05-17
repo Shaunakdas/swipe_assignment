@@ -33,6 +33,9 @@ class Deck extends Component {
         if (gesture.dx > SWIPE_THRESHOLD) {
           const x = -WINDOW_WIDTH;
           this.forceSwipe(x);
+        } else if (gesture.dx < -SWIPE_THRESHOLD) {
+          const x = WINDOW_WIDTH;
+          this.forceSwipe(x);
         }
       }
     });
