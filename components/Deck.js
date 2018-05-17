@@ -7,6 +7,7 @@ import { Card, Button } from 'react-native-elements';
 
 const WINDOW_WIDTH = Dimensions.get('window').width;
 const SWIPE_THRESHOLD = WINDOW_WIDTH/4;
+const SWIPE_OUT_DURATION = 250;
 
 class Deck extends Component {
 
@@ -30,7 +31,8 @@ class Deck extends Component {
       onPanResponderRelease: (event, gesture) => {
         //Track distance from original location and compare with threshold values
         if (gesture.dx > SWIPE_THRESHOLD) {
-          
+          const x = -WINDOW_WIDTH;
+          this.forceSwipe(x);
         }
       }
     });
@@ -51,11 +53,28 @@ class Deck extends Component {
     LayoutAnimation.spring();
   }
 
-	renderUpperCard() {
+  //Force Swipe card to the end of window (left or right)
+  forceSwipe(finalX) {
+    Animated.timing(this.state.position, {
+      toValue: { finalX, y: 0 },
+      duration: SWIPE_OUT_DURATION
+    }).start(() => this.onSwipeFinish());
+  }
+
+  //Modify State variables index and position after card is swiped
+  onSwipeFinish() {
+    //Resetting position to track position of next card
+    this.state.position.setValue({ x: 0, y: 0 });
+    //Updating state.index after a card is swiped out of window
+    this.setState({ index: this.state.index + 1 });
+  }
+
+	renderUpperCard(item) {
     return (
       <Card
         image={{ }}
-        title={`Card #1`}
+        key={item.id}
+        title={`Card #${item.id}`}
       >
         <Text>
           I can customize the Card further.
@@ -68,10 +87,28 @@ class Deck extends Component {
     );
   }
 
+
+  renderCards() {
+  	return this.props.data.map((item, i) => {
+  		// If current card index is same as state index, this is the uppermost card visible now
+      if (i === this.state.index) {
+	    	return (
+	          //Topmost card
+	          <Animated.View
+	            key={item.id}
+	            style={[ styles.cardStyle, { zIndex: 99 }]}
+	            {...this.state.panResponder.panHandlers}
+	          >
+	            {this.renderUpperCard(item)}
+	          </Animated.View>
+	        );
+	    }
+    }).reverse();
+  }
 	render() {
     return (
       <View>
-        {this.renderUpperCard()}
+        {this.renderCards()}
       </View>
     );
   }
