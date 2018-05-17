@@ -87,7 +87,7 @@ class Deck extends Component {
       transform: [{ rotate }]
     };
   }
-  
+
   //If user doesn't swipe card to the end of window on either side
   resetPosition() {
     Animated.spring(this.state.position, {
@@ -116,6 +116,8 @@ class Deck extends Component {
 
   renderCards() {
   	return this.props.data.map((item, i) => {
+  		if (i < this.state.index) { return null; }
+
   		// If current card index is same as state index, this is the uppermost card visible now
       if (i === this.state.index) {
 	    	return (
@@ -129,6 +131,17 @@ class Deck extends Component {
 	          </Animated.View>
 	        );
 	    }
+
+	    return (
+        //Cards behind front card
+        <Animated.View
+          key={item.id}
+          //For hidden cards, give a stacked deck appearance
+          style={[styles.cardStyle, { top: 10 * (i - this.state.index), zIndex: 5 }]}
+        >
+          {this.renderUpperCard(item)}
+        </Animated.View>
+      );
     }).reverse();
   }
 	render() {
@@ -141,6 +154,10 @@ class Deck extends Component {
 }
 
 const styles = {
+	cardStyle: {
+    position: 'absolute',
+    width: WINDOW_WIDTH
+  },
   button: {
     alignItems: 'center',
     backgroundColor: '#fff',
