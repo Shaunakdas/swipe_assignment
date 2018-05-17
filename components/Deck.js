@@ -112,9 +112,27 @@ class Deck extends Component {
       </Card>
     );
   }
-
+  
+  renderLastCard() {
+    return (
+      <Card title="All Done!">
+        <Text>
+          There's no more content here!
+        </Text>
+        <TouchableOpacity
+          style={styles.button} >
+           <Text>Get More</Text>
+        </TouchableOpacity>
+      </Card>
+    );
+  }
 
   renderCards() {
+  	// If all the cards are already swiped, index will overflow than data array length
+    if (this.state.index >= this.props.data.length) {
+      return this.renderLastCard();
+    }
+
   	return this.props.data.map((item, i) => {
   		if (i < this.state.index) { return null; }
 
