@@ -36,6 +36,8 @@ class Deck extends Component {
         } else if (gesture.dx < -SWIPE_THRESHOLD) {
           const x = WINDOW_WIDTH;
           this.forceSwipe(x);
+        } else {
+          this.resetPosition();
         }
       }
     });
@@ -84,6 +86,13 @@ class Deck extends Component {
       ...position.getLayout(),
       transform: [{ rotate }]
     };
+  }
+  
+  //If user doesn't swipe card to the end of window on either side
+  resetPosition() {
+    Animated.spring(this.state.position, {
+      toValue: { x: 0, y: 0 }
+    }).start();
   }
 
 	renderUpperCard(item) {
